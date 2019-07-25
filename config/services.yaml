@@ -31,3 +31,8 @@ services:
             - "@doctrine.orm.entity_manager"
         tags:
             - { name: console_command }
+
+    console_command.send_report:
+        class: App\Command\SendReport
+        tags:
+            - { name: console_command }

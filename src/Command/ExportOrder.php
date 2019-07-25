@@ -48,7 +48,7 @@ class ExportOrder extends Command
     {
 
 		// Download JSON File
-		//$this->getJSONFile();
+		$this->getJSONFile();
 		
 		// JSON to CSV
 		$jsonFile = __DIR__ . '\orders.json';
