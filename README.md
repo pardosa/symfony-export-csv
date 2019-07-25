@@ -1,5 +1,5 @@
 # symfony-export-csv
-Using Symfony framework to download JSON File, insert to database, and export summary to CSV File
+Using Symfony framework to download JSON File, insert to database, and export summary to File
 
 ## Installation
 
@@ -18,9 +18,9 @@ MAILER_URL=gmail://username:password@127.0.0.1?encryption=tls&auth_mode=oauth
 
 ## Usage
 
-To Download JSON File, import to database, and export report to CSV:
+To Download JSON File, import to database, and export report to File (JSON/CSV):
 ```bash
-php bin\console app:export-order "output file name"
+php bin\console app:export-order "output file name" "output file type"
 ```
 To Send the CSV File to email:
 
