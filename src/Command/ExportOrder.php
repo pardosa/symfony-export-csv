@@ -36,7 +36,8 @@ class ExportOrder extends Command
         $this -> setName('convert')
             -> setDescription('Download JSON file and convert to CSV.')
             -> setHelp('This command allows you to download and convert file...')
-            -> addArgument('outputfile', InputArgument::REQUIRED, 'The name of the CSV file');
+			-> addArgument('outputfile', InputArgument::REQUIRED, 'The name of the Output file')
+			-> addArgument('filetype', InputArgument::REQUIRED, 'The type of output file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -52,7 +53,7 @@ class ExportOrder extends Command
 		
 		// JSON to CSV
 		$jsonFile = __DIR__ . '\orders.json';
-		$this->jsonToCsv($jsonFile, __DIR__ . '/' . $input->getArgument('outputfile'));	
+		$this->exportFile($jsonFile, __DIR__ . '/' . $input->getArgument('outputfile'), $input->getArgument('filetype'));	
 		
     }
 	
@@ -71,7 +72,7 @@ class ExportOrder extends Command
 		}
     }
 	
-	function jsonToCsv ($jsonFile, $csvFilePath = false) {
+	function exportFile ($jsonFile, $csvFilePath = false, $fileType) {
 
 		$jsonFile = fopen($jsonFile, 'r');
 
@@ -163,26 +164,38 @@ class ExportOrder extends Command
 				$this->em->flush();
 				
 				$arraycsv = [];
-				$arraycsv[] = $order->getOrderId();
-				$arraycsv[] = $order->getOrderDate();
-				$arraycsv[] = $order->getTotalOrderValue();
-				$arraycsv[] = $order->getAvarageUnitPrice();
-				$arraycsv[] = $order->countDistinctUnit();
-				$arraycsv[] = $order->getTotalUnit();
-				$arraycsv[] = $order->getCustomer()->getShippingState();
-				
-				if (!$firstLineKeys)
-				{
-					$firstLineKeys = ["order_id", "order_datetime", "total_order_value", "average_unit_price", "distinct_unit_count", "total_units_count", "customer_state"];
-					fputcsv($f, $firstLineKeys);
-					$firstLineKeys = true; 
+				$arraycsv["order_id"] = $order->getOrderId();
+				$arraycsv["order_date"] = $order->getOrderDate();
+				$arraycsv["total_order_value"] = $order->getTotalOrderValue();
+				$arraycsv["average_unit_price"] = $order->getAvarageUnitPrice();
+				$arraycsv["distinct_unit_count"] = $order->countDistinctUnit();
+				$arraycsv["total_units_count"] = $order->getTotalUnit();
+				$arraycsv["customer_state"] = $order->getCustomer()->getShippingState();
+
+				switch ($fileType) {
+					case 'json':
+						fwrite($f, json_encode($arraycsv));
+						break;
+					case 'csv':
+						if (!$firstLineKeys)
+						{
+							$firstLineKeys = ["order_id", "order_datetime", "total_order_value", "average_unit_price", "distinct_unit_count", "total_units_count", "customer_state"];
+							fputcsv($f, $firstLineKeys);
+							$firstLineKeys = true; 
+						}
+						
+						fputcsv($f, $arraycsv);
+						break;
+					
+					default:
+						fwrite($f, json_encode($arraycsv));
+						break;
 				}
-				
-				fputcsv($f, $arraycsv);
 				
 			}
 			
 	 	}
 	 	fclose($f);
 	}
+
 }
