@@ -7,14 +7,30 @@ use Doctrine\ORM\Mapping as ORM;
  /**
  * @ORM\MappedSuperclass
  */
- interface BaseDiscount {
-    public function addDiscount($price);
+ interface DiscountInterface {
+    public function addDiscount($price, $value);
  }
+
+class DollarDiscount implements DiscountInterface
+{
+    public function addDiscount($price, $value)
+    {
+        return $value;
+    }
+}
+
+class PercentageDiscount implements DiscountInterface
+{
+
+    public function addDiscount($price, $value){
+        return $price * $value / 100;
+    }
+}
 
  /**
  * @ORM\Entity(repositoryClass="App\Repository\DiscountRepository")
  */
-class Discount implements BaseDiscount
+class Discount
 {
     /**
      * @ORM\Id()
@@ -97,11 +113,7 @@ class Discount implements BaseDiscount
         return $this;
     }
 
-    public function addDiscount($price){
-        if ($this->type == "DOLLAR"){
-            return $this->value;
-        }elseif($this->type == "PERCENTAGE"){
-            return $price * $this->value / 100;
-        }
+    public function addDiscount(DiscountInterface $discount, $price){
+        return $discount->addDiscount($price, $this->value);
     }
 }

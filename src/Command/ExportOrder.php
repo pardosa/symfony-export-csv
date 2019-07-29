@@ -93,6 +93,7 @@ class ExportOrder extends Command
 					$disc->setType($discount["type"]);
 					$disc->setValue($discount["value"]);
 					$disc->setPriority($discount["priority"]);
+
 					$order->addDiscount($disc);
 					$this->em->persist($disc);
 				}
