@@ -49,7 +49,7 @@ class ExportOrder extends Command
     {
 
 		// Download JSON File
-		$this->getJSONFile();
+		//$this->getJSONFile();
 		
 		// JSON to CSV
 		$jsonFile = __DIR__ . '\orders.json';
@@ -161,7 +161,7 @@ class ExportOrder extends Command
 				}
 				
 				$this->em->persist($order);
-				$this->em->flush();
+				//$this->em->flush();
 				
 				$arraycsv = [];
 				$arraycsv["order_id"] = $order->getOrderId();

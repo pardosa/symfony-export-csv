@@ -63,24 +63,16 @@ class Order
         return $this->order_date;
     }
 
-    // public function sortDiscounts(){
-    //     array_multisort(array_map(function($element) {
-    //         return $element['priority'];
-    //     }, $this->discounts), SORT_ASC, $this->discounts);
-
-    // }
-
     public function countDiscounts(){
+        $totalDiscounts = 0;
         foreach($this->discounts as $discount){
-            if ($discount->getType() == "DOLLAR"){
-                $this->total_order_value -= $discount->getvalue();
-            }elseif($discount->getType() == "PERCENTAGE"){
-                $this->total_order_value -=  $this->total_order_value * $discount->getValue() / 100;
-            }
+            $totalDiscounts += $discount->addDiscount($this->total_order_value);
         }
+
+        return $totalDiscounts;
     }
 
-    public function orderValue(){
+    public function getTotalOrderValue(){
         $this->total_unit = 0;
         $this->total_order_value = 0;
 
@@ -88,18 +80,19 @@ class Order
             $this->total_unit += $item->getQuantity();
             $this->total_order_value += $item->getQuantity() * $item->getUnitPrice();
         }
+        
+        return '$' . number_format($this->total_order_value - $this->countDiscounts(), 2);
     }
     
 
-    public function getTotalOrderValue(){
+    public function getTotalOrderWithShipping(){
         $this->orderValue();
-        $this->countDiscounts();
         
         return '$' . number_format($this->total_order_value - $this->shipping_price, 2);
     }
 
     public function getAvarageUnitPrice(){
-        $this->orderValue();
+        //$this->getTotalOrderValue();
         if ($this->total_unit > 0)
             return '$' . number_format($this->total_order_value / $this->total_unit, 2);
         else
@@ -124,13 +117,6 @@ class Order
     public function getDiscounts()
     {
         return $this->discounts;
-    }
-
-    public function setDiscounts($discounts): self
-    {
-        $this->discounts = $discounts;
-
-        return $this;
     }
 
     public function getShippingPrice()
@@ -210,4 +196,5 @@ class Order
 
         return $this;
     }
+
 }

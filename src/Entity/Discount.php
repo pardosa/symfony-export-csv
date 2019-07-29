@@ -4,10 +4,17 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
+ /**
+ * @ORM\MappedSuperclass
+ */
+ interface BaseDiscount {
+    public function addDiscount($price);
+ }
+
+ /**
  * @ORM\Entity(repositoryClass="App\Repository\DiscountRepository")
  */
-class Discount
+class Discount implements BaseDiscount
 {
     /**
      * @ORM\Id()
@@ -88,5 +95,13 @@ class Discount
         $this->order = $order;
 
         return $this;
+    }
+
+    public function addDiscount($price){
+        if ($this->type == "DOLLAR"){
+            return $this->value;
+        }elseif($this->type == "PERCENTAGE"){
+            return $price * $this->value / 100;
+        }
     }
 }
