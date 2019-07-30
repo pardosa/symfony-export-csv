@@ -27,6 +27,28 @@ class PercentageDiscount implements DiscountInterface
     }
 }
 
+class DiscountFactory
+{
+    /**
+     * Count discount by its type.
+     *
+     * @param $type
+     * @return DiscountInterface
+     * @throws \Exception
+     */
+    public static function getDiscountType(string $type): DiscountInterface
+    {
+        switch ($type) {
+            case "DOLLAR":
+                return new DollarDiscount;
+            case "PERCENTAGE":
+                return new PercentageDiscount;
+            default:
+                throw new \Exception("Unknown Discount Type");
+        }
+    }
+}
+
  /**
  * @ORM\Entity(repositoryClass="App\Repository\DiscountRepository")
  */

@@ -66,11 +66,7 @@ class Order
     public function countDiscounts(){
         $totalDiscounts = 0;
         foreach($this->discounts as $discount){
-            if ($discount->getType() == "DOLLAR"){
-                $discType = new DollarDiscount();
-            }elseif($discount->getType() == "PERCENTAGE"){
-                $discType = new PercentageDiscount();
-            }
+            $discType = DiscountFactory::getDiscountType($discount->getType());
             $totalDiscounts += $discount->addDiscount($discType, $this->total_order_value);
         }
 
